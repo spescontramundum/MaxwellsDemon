@@ -224,7 +224,6 @@ def startGame():
                 lhs_particles.add(entity)
             else:
                 entity.remove(lhs_particles)
-            print(len(lhs_particles))
             #if the particle makes contact with the demon sprite, reflect back
             if entity.rect.colliderect(demon.rect):
                 entity.vx = -entity.vx
