@@ -6,6 +6,7 @@ import numpy as np
 import leaderboard
 #import scipy
 
+
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 # from pygame.locals import *
@@ -59,12 +60,6 @@ class Particle(pygame.sprite.Sprite):
             )
         )
 
-
-
-
-
-
-
     # Move the particle based on speed
     def update(self):
 
@@ -117,15 +112,15 @@ class Demon(Particle):
     # Move the sprite based on keypresses
     def move(self, pressed_keys):
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
+            self.rect.move_ip(0, -20)
             #move_up_sound.play()
         if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
+            self.rect.move_ip(0, 20)
             #move_down_sound.play()
         if pressed_keys[K_LEFT]:
-            self.rect.move_ip(-5, 0)
+            self.rect.move_ip(-20, 0)
         if pressed_keys[K_RIGHT]:
-            self.rect.move_ip(5, 0)
+            self.rect.move_ip(20, 0)
 
         # Keep player on the screen
         if self.rect.top <= 0:
@@ -137,13 +132,13 @@ class Demon(Particle):
         elif self.rect.right >= SCREEN_WIDTH:
             self.rect.right = SCREEN_WIDTH
 
-    def update(self):
-        # bounce particle on the edge screen
-        if self.rect.top <= 1 or self.rect.bottom >= SCREEN_HEIGHT -1:
-            self.vy = -self.vy
-        if self.rect.left <= 1 or self.rect.right >= SCREEN_WIDTH -1:
-            self.vx = -self.vx
-        self.rect.move_ip(self.vx, self.vy)
+    # def update(self):
+    #     # bounce particle on the edge screen
+    #     if self.rect.top <= 1 or self.rect.bottom >= SCREEN_HEIGHT -1:
+    #         self.vy = -self.vy
+    #     if self.rect.left <= 1 or self.rect.right >= SCREEN_WIDTH -1:
+    #         self.vx = -self.vx
+    #     self.rect.move_ip(self.vx, self.vy)
 
 
 #
@@ -183,7 +178,6 @@ def startGame():
         particle = Particle()
         if particle.rect.left <= DIVIDER:
             lhs_particles.add(particle)
-            print(particle.rect.left)
         #checks if particle is on LHS of screen, if it is increase the count by one
         all_particles.add(particle)
         all_sprites.add(particle)
@@ -246,8 +240,15 @@ def startGame():
 
             #if more than half of the particles end up in the right hand side of the screen, the player has lost
             if len(lhs_particles) < len(all_particles)/2:
-               running = False
-
+                running = False
+            current_time = pygame.time.get_ticks()
+            if current_time > 6000 and len(lhs_particles) == len(all_particles):
+                print("you win")
+                #look up old record for shortest time
+                lowest_time = leaderboard.get_low_score()
+                #see whether the current winning time is shorter than the last winning time
+                leaderboard.isless(current_time, lowest_time)
+                running = False
 
         all_particles.update()
         pygame.display.set_caption("Maxwell Pong SCORE: "+ str(len(lhs_particles)))
@@ -255,7 +256,7 @@ def startGame():
         # Flip everything to the display
         pygame.display.flip()
 
-        # Ensure we maintain a 30 frames per second rate
+        # choose frame per second rate
         clock.tick(5)
 
     # stop and quit the mixer
